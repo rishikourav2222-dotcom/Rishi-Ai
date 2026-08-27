@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Rishi GK Quiz</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+  background:linear-gradient(135deg,#4facfe,#764ba2);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:15px;
+}
+
+.game{
+  width:100%;
+  max-width:500px;
+  background:white;
+  border-radius:25px;
+  padding:22px;
+  box-shadow:0 10px 35px rgba(0,0,0,.3);
+}
+
+h1{
+  text-align:center;
+  margin:5px 0 20px;
+}
+
+.center{
+  text-align:center;
+}
+
+.levels{
+  display:grid;
+  gap:12px;
+}
+
+.level{
+  border:0;
+  border-radius:15px;
+  padding:18px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.easy{
+  background:#b8f2c2;
+}
+
+.medium{
+  background:#ffe08a;
+}
+
+.hard{
+  background:#ffaaa5;
+}
+
+.locked{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.info{
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+.timer{
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  margin:10px;
+}
+
+.question{
+  font-size:22px;
+  font-weight:bold;
+  margin:25px 0;
+  line-height:1.4;
+}
+
+.options{
+  display:grid;
+  gap:12px;
+}
+
+.option{
+  width:100%;
+  padding:15px;
+  border:2px solid #ddd;
+  border-radius:12px;
+  background:#f7f7f7;
+  font-size:17px;
+  text-align:left;
+  cursor:pointer;
+}
+
+.option:hover{
+  background:#e9f4ff;
+}
+
+.correct{
+  background:#9be7a5 !important;
+  border-color:#219653;
+}
+
+.wrong{
+  background:#ffaaa5 !important;
+  border-color:#d63031;
+}
+
+button:disabled{
+  cursor:not-allowed;
+}
+
+.next{
+  width:100%;
+  margin-top:18px;
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  background:#4facfe;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.hidden{
+  display:none;
+}
+
+.result{
+  text-align:center;
+}
+
+.result h2{
+  font-size:28px;
+}
+
+.restart{
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  background:#222;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+<!-- HOME SCREEN -->
+
+<div id="home">
+
+<h1>🧠 Rishi GK Quiz</h1>
+
+<div class="center">
+<p>Choose your level</p>
+<p>🎯 Total Questions: 100</p>
+</div>
+
+<div class="levels">
+
+<button class="level easy" onclick="startLevel(1)">
+🟢 LEVEL 1 - EASY
+<br>
+50 Questions • 60 Seconds
+</button>
+
+<button id="level2Button"
+class="level medium locked"
+onclick="startLevel(2)"
+disabled>
+🔒 LEVEL 2 - MEDIUM
+<br>
+30 Questions • 45 Seconds
+</button>
+
+<button id="level3Button"
+class="level hard locked"
+onclick="startLevel(3)"
+disabled>
+🔒 LEVEL 3 - HARD
+<br>
+20 Questions • 30 Seconds
+</button>
+
+</div>
+
+</div>
+
+
+<!-- QUIZ SCREEN -->
+
+<div id="quiz" class="hidden">
+
+<div class="info">
+
+<span>
+Level <span id="levelNumber">1</span>
+</span>
+
+<span>
+Score: <span id="score">0</span>
+</span>
+
+</div>
+
+<div class="info">
+
+<span>
+Question <span id="questionNumber">1</span>
+</span>
+
+<span>
+Total <span id="totalQuestions">50</span>
+</span>
+
+</div>
+
+<div class="timer">
+⏱️ <span id="time">60</span>
+</div>
+
+<div class="question" id="question">
+Question
+</div>
+
+<div class="options" id="options"></div>
+
+<button
+class="next hidden"
+id="nextButton"
+onclick="nextQuestion()">
+➡️ Next Question
+</button>
+
+</div>
+
+
+<!-- RESULT SCREEN -->
+
+<div id="result" class="result hidden">
+
+<h1>🎉 Level Complete!</h1>
+
+<h2 id="resultTitle"></h2>
+
+<p>
+🏆 Score: <b id="finalScore">0</b>
+</p>
+
+<p>
+✅ Correct: <b id="correctCount">0</b>
+</p>
+
+<p>
+❌ Wrong: <b id="wrongCount">0</b>
+</p>
+
+<button
+id="continueButton"
+class="next"
+onclick="continueGame()">
+➡️ Continue
+</button>
+
+<button
+class="restart"
+onclick="goHome()">
+🏠 Home
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   LEVEL 1 - EASY
+   50 QUESTIONS
+========================= */
+
+const easyQuestions = [
+
+{
+q:"Who is the Prime Minister of India?",
+o:["Narendra Modi","Rahul Gandhi","Amit Shah","Rajnath Singh"],
+a:0
+},
+
+{
+q:"What is the capital of India?",
+o:["Mumbai","New Delhi","Kolkata","Chennai"],
+a:1
+},
+
+{
+q:"What is the national animal of India?",
+o:["Lion","Tiger","Elephant","Deer"],
+a:1
+},
+
+{
+q:"What is the national bird of India?",
+o:["Parrot","Peacock","Eagle","Sparrow"],
+a:1
+},
+
+{
+q:"How many days are there in a week?",
+o:["5","6","7","8"],
+a:2
+},
+
+{
+q:"How many months are there in a year?",
+o:["10","11","12","13"],
+a:2
+},
+
+{
+q:"Which planet is called the Red Planet?",
+o:["Earth","Mars","Jupiter","Venus"],
+a:1
+},
+
+{
+q:"Which is the largest planet?",
+o:["Earth","Mars","Jupiter","Mercury"],
+a:2
+},
+
+{
+q:"Which star gives us light and heat?",
+o:["Moon","Sun","Mars","Venus"],
+a:1
+},
+
+{
+q:"How many legs does a spider have?",
+o:["6","8","10","12"],
+a:1
+},
+
+{
+q:"What is 10 + 20?",
+o:["20","25","30","40"],
+a:2
+},
+
+{
+q:"What is 50 - 20?",
+o:["20","30","40","50"],
+a:1
+},
+
+{
+q:"What is 5 × 5?",
+o:["10","20","25","30"],
+a:2
+},
+
+{
+q:"What is 100 ÷ 10?",
+o:["5","10","20","50"],
+a:1
+},
+
+{
+q:"Which animal is known as the King of the Jungle?",
+o:["Tiger","Lion","Elephant","Bear"],
+a:1
+},
+
+{
+q:"Which animal gives us milk?",
+o:["Cow","Lion","Tiger","Fox"],
+a:0
+},
+
+{
+q:"Which is the fastest land animal?",
+o:["Lion","Horse","Cheetah","Tiger"],
+a:2
+},
+
+{
+q:"Which bird can imitate human speech?",
+o:["Crow","Parrot","Eagle","Owl"],
+a:1
+},
+
+{
+q:"Which is the largest ocean?",
+o:["Indian Ocean","Atlantic Ocean","Pacific Ocean","Arctic Ocean"],
+a:2
+},
+
+{
+q:"Which is the highest mountain in the world?",
+o:["K2","Mount Everest","Kanchenjunga","Nanda Devi"],
+a:1
+},
+
+{
+q:"Which river is known as the holy river of India?",
+o:["Ganga","Yamuna","Narmada","Godavari"],
+a:0
+},
+
+{
+q:"Which festival is called the festival of lights?",
+o:["Holi","Diwali","Eid","Christmas"],
+a:1
+},
+
+{
+q:"Which festival is known as the festival of colours?",
+o:["Holi","Diwali","Pongal","Onam"],
+a:0
+},
+
+{
+q:"Who is known as the Father of the Nation in India?",
+o:["Jawaharlal Nehru","Mahatma Gandhi","Subhash Chandra Bose","Sardar Patel"],
+a:1
+},
+
+{
+q:"Who was the first Prime Minister of India?",
+o:["Mahatma Gandhi","Jawaharlal Nehru","Sardar Patel","Rajendra Prasad"],
+a:1
+},
+
+{
+q:"Who was the first President of India?",
+o:["Rajendra Prasad","Jawaharlal Nehru","Dr. B. R. Ambedkar","S. Radhakrishnan"],
+a:0
+},
+
+{
+q:"What is the national flower of India?",
+o:["Rose","Lotus","Sunflower","Lily"],
+a:1
+},
+
+{
+q:"What is the national fruit of India?",
+o:["Apple","Mango","Banana","Orange"],
+a:1
+},
+
+{
+q:"What is the national tree of India?",
+o:["Neem","Banyan","Mango","Peepal"],
+a:1
+},
+
+{
+q:"How many colours are there in the Indian national flag?",
+o:["2","3","4","5"],
+a:1
+},
+
+{
+q:"Which is the smallest planet in our Solar System?",
+o:["Mars","Mercury","Venus","Earth"],
+a:1
+},
+
+{
+q:"Which planet is closest to the Sun?",
+o:["Earth","Mars","Mercury","Jupiter"],
+a:2
+},
+
+{
+q:"Which planet is known for its beautiful rings?",
+o:["Saturn","Mars","Earth","Venus"],
+a:0
+},
+
+{
+q:"How many continents are there?",
+o:["5","6","7","8"],
+a:2
+},
+
+{
+q:"How many oceans are there on Earth?",
+o:["3","4","5","6"],
+a:2
+},
+
+{
+q:"Which sense organ helps us to see?",
+o:["Ear","Eye","Nose","Tongue"],
+a:1
+},
+
+{
+q:"Which organ helps us to hear?",
+o:["Eye","Ear","Nose","Skin"],
+a:1
+},
+
+{
+q:"Which gas do humans need to breathe?",
+o:["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],
+a:0
+},
+
+{
+q:"Which gas do plants take in?",
+o:["Oxygen","Carbon dioxide","Hydrogen","Helium"],
+a:1
+},
+
+{
+q:"How many hours are there in a day?",
+o:["12","18","24","30"],
+a:2
+},
+
+{
+q:"How many minutes are there in one hour?",
+o:["30","45","60","90"],
+a:2
+},
+
+{
+q:"Which is the largest continent?",
+o:["Asia","Africa","Europe","Australia"],
+a:0
+},
+
+{
+q:"Which is the smallest continent?",
+o:["Asia","Europe","Australia","Africa"],
+a:2
+},
+
+{
+q:"Which country is famous for the Eiffel Tower?",
+o:["India","France","Japan","Italy"],
+a:1
+},
+
+{
+q:"Which country is famous for the Great Wall?",
+o:["India","China","Japan","Russia"],
+a:1
+},
+
+{
+q:"Which sport uses a bat and ball?",
+o:["Football","Cricket","Swimming","Boxing"],
+a:1
+},
+
+{
+q:"How many players are there in a cricket team?",
+o:["9","10","11","12"],
+a:2
+},
+
+{
+q:"Which sport is played at Wimbledon?",
+o:["Football","Tennis","Cricket","Hockey"],
+a:1
+},
+
+{
+q:"Which animal is called the Ship of the Desert?",
+o:["Horse","Camel","Elephant","Donkey"],
+a:1
+}
+
+];
+
+
+/* =========================
+   LEVEL 2 - MEDIUM
+   30 QUESTIONS
+========================= */
+
+const mediumQuestions = [
+
+{
+q:"Which is the longest river in India?",
+o:["Ganga","Yamuna","Godavari","Narmada"],
+a:0
+},
+
+{
+q:"Who wrote the Indian National Anthem?",
+o:["Rabindranath Tagore","Mahatma Gandhi","Bankim Chandra Chatterjee","Sarojini Naidu"],
+a:0
+},
+
+{
+q:"Who designed the Indian national flag?",
+o:["Pingali Venkayya","Mahatma Gandhi","B. R. Ambedkar","Jawaharlal Nehru"],
+a:0
+},
+
+{
+q:"Which is the largest state of India by area?",
+o:["Madhya Pradesh","Maharashtra","Rajasthan","Uttar Pradesh"],
+a:2
+},
+
+{
+q:"Which is the smallest state of India by area?",
+o:["Goa","Sikkim","Tripura","Manipur"],
+a:0
+},
+
+{
+q:"Which Indian state is known as the Land of Rising Sun?",
+o:["Assam","Arunachal Pradesh","Sikkim","Nagaland"],
+a:1
+},
+
+{
+q:"Which is the highest civilian award in India?",
+o:["Padma Shri","Bharat Ratna","Padma Bhushan","Param Vir Chakra"],
+a:1
+},
+
+{
+q:"Who is known as the Missile Man of India?",
+o:["A. P. J. Abdul Kalam","C. V. Raman","Homi Bhabha","Vikram Sarabhai"],
+a:0
+},
+
+{
+q:"Who was the first Indian to win a Nobel Prize?",
+o:["C. V. Raman","Rabindranath Tagore","Mother Teresa","Amartya Sen"],
+a:1
+},
+
+{
+q:"Which is the largest desert in India?",
+o:["Thar Desert","Sahara Desert","Gobi Desert","Kalahari Desert"],
+a:0
+},
+
+{
+q:"Which is the capital of Madhya Pradesh?",
+o:["Indore","Bhopal","Jabalpur","Gwalior"],
+a:1
+},
+
+{
+q:"Which city is called the Pink City?",
+o:["Jaipur","Jodhpur","Udaipur","Bikaner"],
+a:0
+},
+
+{
+q:"Which city is called the City of Lakes in Madhya Pradesh?",
+o:["Indore","Bhopal","Gwalior","Sagar"],
+a:1
+},
+
+{
+q:"Which is the largest mammal?",
+o:["Elephant","Blue Whale","Giraffe","Rhino"],
+a:1
+},
+
+{
+q:"Which is the fastest bird in the world?",
+o:["Eagle","Peregrine Falcon","Parrot","Ostrich"],
+a:1
+},
+
+{
+q:"Which vitamin is mainly obtained from sunlight?",
+o:["Vitamin A","Vitamin B","Vitamin C","Vitamin D"],
+a:3
+},
+
+{
+q:"What is the boiling point of water at sea level?",
+o:["50°C","75°C","100°C","150°C"],
+a:2
+},
+
+{
+q:"How many bones are there approximately in an adult human body?",
+o:["106","206","306","406"],
+a:1
+},
+
+{
+q:"Which is the hardest natural substance?",
+o:["Gold","Iron","Diamond","Silver"],
+a:2
+},
+
+{
+q:"Which metal is liquid at room temperature?",
+o:["Iron","Mercury","Copper","Gold"],
+a:1
+},
+
+{
+q:"Which instrument is used to measure temperature?",
+o:["Barometer","Thermometer","Compass","Speedometer"],
+a:1
+},
+
+{
+q:"Which instrument is used to find direction?",
+o:["Compass","Thermometer","Clock","Scale"],
+a:0
+},
+
+{
+q:"Which layer protects Earth from harmful ultraviolet rays?",
+o:["Ozone layer","Cloud layer","Dust layer","Water layer"],
+a:0
+},
+
+{
+q:"What is the process by which plants make food?",
+o:["Respiration","Photosynthesis","Digestion","Germination"],
+a:1
+},
+
+{
+q:"Which blood cells help fight infections?",
+o:["Red blood cells","White blood cells","Platelets","Plasma"],
+a:1
+},
+
+{
+q:"Which organ pumps blood around the body?",
+o:["Lungs","Brain","Heart","Kidney"],
+a:2
+},
+
+{
+q:"Which is the largest internal organ of the human body?",
+o:["Heart","Liver","Brain","Lung"],
+a:1
+},
+
+{
+q:"Which country is known as the Land of the Rising Sun?",
+o:["China","Japan","Korea","Thailand"],
+a:1
+},
+
+{
+q:"Which is the currency of Japan?",
+o:["Won","Yuan","Yen","Dollar"],
+a:2
+},
+
+{
+q:"Which is the capital of Australia?",
+o:["Sydney","Melbourne","Canberra","Perth"],
+a:2
+}
+
+];
+
+
+/* =========================
+   LEVEL 3 - HARD
+   20 QUESTIONS
+========================= */
+
+const hardQuestions = [
+
+{
+q:"Who was the first Indian woman to win an Olympic medal?",
+o:["Mary Kom","P. T. Usha","Karnam Malleswari","Saina Nehwal"],
+a:2
+},
+
+{
+q:"Who discovered gravity according to the famous story?",
+o:["Albert Einstein","Isaac Newton","Galileo Galilei","Thomas Edison"],
+a:1
+},
+
+{
+q:"Who invented the telephone?",
+o:["Alexander Graham Bell","Thomas Edison","Newton","Marconi"],
+a:0
+},
+
+{
+q:"Who invented the electric bulb commercially?",
+o:["Thomas Edison","Newton","Einstein","James Watt"],
+a:0
+},
+
+{
+q:"Who discovered penicillin?",
+o:["Alexander Fleming","Louis Pasteur","Newton","Darwin"],
+a:0
+},
+
+{
+q:"Which is the deepest ocean in the world?",
+o:["Atlantic Ocean","Indian Ocean","Pacific Ocean","Arctic Ocean"],
+a:2
+},
+
+{
+q:"Which is the largest hot desert in the world?",
+o:["Thar","Sahara","Gobi","Kalahari"],
+a:1
+},
+
+{
+q:"Which is the longest mountain range on land?",
+o:["Himalayas","Andes","Alps","Rockies"],
+a:1
+},
+
+{
+q:"Which planet has the Great Red Spot?",
+o:["Mars","Jupiter","Saturn","Neptune"],
+a:1
+},
+
+{
+q:"Which planet rotates on its side?",
+o:["Uranus","Mars","Venus","Mercury"],
+a:0
+},
+
+{
+q:"Which is the nearest star to Earth after the Sun?",
+o:["Sirius","Proxima Centauri","Polaris","Vega"],
+a:1
+},
+
+{
+q:"What is the SI unit of force?",
+o:["Joule","Watt","Newton","Pascal"],
+a:2
+},
+
+{
+q:"What is the SI unit of electric current?",
+o:["Volt","Ampere","Ohm","Watt"],
+a:1
+},
+
+{
+q:"Which gas is most abundant in Earth's atmosphere?",
+o:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],
+a:1
+},
+
+{
+q:"Which part of the plant absorbs water from soil?",
+o:["Leaf","Stem","Root","Flower"],
+a:2
+},
+
+{
+q:"Which is the largest gland in the human body?",
+o:["Pancreas","Liver","Thyroid","Pituitary"],
+a:1
+},
+
+{
+q:"Who proposed the theory of relativity?",
+o:["Isaac Newton","Albert Einstein","Galileo","Darwin"],
+a:1
+},
+
+{
+q:"Who wrote the book 'Discovery of India'?",
+o:["Jawaharlal Nehru","Mahatma Gandhi","Rabindranath Tagore","Sardar Patel"],
+a:0
+},
+
+{
+q:"Which Indian space agency launched Chandrayaan missions?",
+o:["NASA","ISRO","ESA","JAXA"],
+a:1
+},
+
+{
+q:"What is the study of earthquakes called?",
+o:["Geology","Seismology","Biology","Meteorology"],
+a:1
+}
+
+];
+
+
+/* =========================
+   GAME VARIABLES
+========================= */
+
+let currentLevel = 1;
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let correct = 0;
+let wrong = 0;
+let timeLeft = 60;
+let timer;
+let answered = false;
+
+function startLevel(level){
+
+  currentLevel = level;
+
+  if(level === 1){
+    currentQuestions = easyQuestions;
+    timeLeft = 60;
+  }
+
+  if(level === 2){
+    currentQuestions = mediumQuestions;
+    timeLeft = 45;
+  }
+
+  if(level === 3){
+    currentQuestions = hardQuestions;
+    timeLeft = 30;
+  }
+
+  currentIndex = 0;
+  score = 0;
+  correct = 0;
+  wrong = 0;
+
+  document.getElementById("home")
+    .classList.add("hidden");
+
+  document.getElementById("result")
+    .classList.add("hidden");
+
+  document.getElementById("quiz")
+    .classList.remove("hidden");
+
+  document.getElementById("levelNumber")
+    .innerText = level;
+
+  document.getElementById("totalQuestions")
+    .innerText = currentQuestions.length;
+
+  document.getElementById("score")
+    .innerText = score;
+
+  showQuestion();
+}
+
+
+function showQuestion(){
+
+  clearInterval(timer);
+
+  answered = false;
+
+  let q = currentQuestions[currentIndex];
+
+  document.getElementById("questionNumber")
+    .innerText = currentIndex + 1;
+
+  document.getElementById("question")
+    .innerText = q.q;
+
+  let options =
+    document.getElementById("options");
+
+  options.innerHTML = "";
+
+  q.o.forEach(function(option,index){
+
+    let button =
+      document.createElement("button");
+
+    button.className = "option";
+
+    button.innerText =
+      String.fromCharCode(65 + index) +
+      ". " + option;
+
+    button.onclick = function(){
+
+      selectAnswer(index,button);
+
+    };
+
+    options.appendChild(button);
+
+  });
+
+  document.getElementById("nextButton")
+    .classList.add("hidden");
+
+  if(currentLevel === 1){
+    timeLeft = 60;
+  }
+
+  if(currentLevel === 2){
+    timeLeft = 45;
+  }
+
+  if(currentLevel === 3){
+    timeLeft = 30;
+  }
+
+  document.getElementById("time")
+    .innerText = timeLeft;
+
+  timer = setInterval(function(){
+
+    timeLeft--;
+
+    document.getElementById("time")
+      .innerText = timeLeft;
+
+    if(timeLeft <= 0){
+
+      clearInterval(timer);
+
+      wrong++;
+
+      disableOptions();
+
+      document.getElementById("nextButton")
+        .classList.remove("hidden");
+
+    }
+
+  },1000);
+}
+
+
+function selectAnswer(index,button){
+
+  if(answered){
+    return;
+  }
+
+  answered = true;
+
+  clearInterval(timer);
+
+  let q = currentQuestions[currentIndex];
+
+  let allOptions =
+    document.querySelectorAll(".option");
+
+  allOptions.forEach(function(btn){
+    btn.disabled = true;
+  });
+
+  if(index === q.a){
+
+    button.classList.add("correct");
+
+    correct++;
+
+    score += 10;
+
+    document.getElementById("score")
+      .innerText = score;
+
+  }else{
+
+    button.classList.add("wrong");
+
+    wrong++;
+
+    allOptions[q.a]
+      .classList.add("correct");
+  }
+
+  document.getElementById("nextButton")
+    .classList.remove("hidden");
+}
+
+
+function disableOptions(){
+
+  let q = currentQuestions[currentIndex];
+
+  let allOptions =
+    document.querySelectorAll(".option");
+
+  allOptions.forEach(function(btn){
+    btn.disabled = true;
+  });
+
+  allOptions[q.a]
+    .classList.add("correct");
+}
+
+
+function nextQuestion(){
+
+  currentIndex++;
+
+  if(currentIndex >= currentQuestions.length){
+
+    finishLevel();
+
+  }else{
+
+    showQuestion();
+
+  }
+}
+
+
+function finishLevel(){
+
+  clearInterval(timer);
+
+  document.getElementById("quiz")
+    .classList.add("hidden");
+
+  document.getElementById("result")
+    .classList.remove("hidden");
+
+  document.getElementById("resultTitle")
+    .innerText =
+    "Level " + currentLevel + " Complete!";
+
+  document.getElementById("finalScore")
+    .innerText = score;
+
+  document.getElementById("correctCount")
+    .innerText = correct;
+
+  document.getElementById("wrongCount")
+    .innerText = wrong;
+
+  let continueButton =
+    document.getElementById("continueButton");
+
+  if(currentLevel === 1){
+
+    continueButton.innerText =
+      "🔓 Unlock Level 2";
+
+    continueButton.disabled = false;
+
+  }else if(currentLevel === 2){
+
+    continueButton.innerText =
+      "🔓 Unlock Level 3";
+
+    continueButton.disabled = false;
+
+  }else{
+
+    continueButton.innerText =
+      "🎉 All Levels Complete!";
+
+    continueButton.disabled = true;
+  }
+}
+
+
+function continueGame(){
+
+  if(currentLevel === 1){
+
+    document.getElementById("level2Button")
+      .disabled = false;
+
+    document.getElementById("level2Button")
+      .classList.remove("locked");
+
+    document.getElementById("result")
+      .classList.add("hidden");
+
+    document.getElementById("home")
+      .classList.remove("hidden");
+
+  }
+
+  else if(currentLevel === 2){
+
+    document.getElementById("level3Button")
+      .disabled = false;
+
+    document.getElementById("level3Button")
+      .classList.remove("locked");
+
+    document.getElementById("result")
+      .classList.add("hidden");
+
+    document.getElementById("home")
+      .classList.remove("hidden");
+
+  }
+}
+
+
+function goHome(){
+
+  clearInterval(timer);
+
+  document.getElementById("quiz")
+    .classList.add("hidden");
+
+  document.getElementById("result")
+    .classList.add("hidden");
+
+  document.getElementById("home")
+    .classList.remove("hidden");
+}
+
+</script>
+
+</body>
+</html>
