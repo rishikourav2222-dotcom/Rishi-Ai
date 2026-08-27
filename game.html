@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Killer Word - 4 Player Game</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#141e30,#243b55);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:15px;
+}
+
+.game{
+  width:100%;
+  max-width:500px;
+  background:#ffffff12;
+  border:1px solid #ffffff25;
+  border-radius:25px;
+  padding:25px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 15px 40px #0008;
+  text-align:center;
+}
+
+h1{
+  font-size:32px;
+  margin-bottom:10px;
+}
+
+h2{
+  margin:15px 0;
+}
+
+p{
+  color:#ddd;
+  line-height:1.5;
+}
+
+button{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:15px;
+  margin-top:12px;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#ffcc00;
+  color:#111;
+}
+
+button:hover{
+  transform:scale(1.02);
+}
+
+button.secondary{
+  background:#ffffff20;
+  color:white;
+}
+
+.player-card{
+  background:#ffffff12;
+  padding:15px;
+  border-radius:15px;
+  margin:10px 0;
+}
+
+.word{
+  font-size:35px;
+  font-weight:bold;
+  margin:25px 0;
+  color:#ffcc00;
+}
+
+.hint-box{
+  background:#0003;
+  padding:18px;
+  border-radius:15px;
+  margin:15px 0;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:0;
+  outline:none;
+  font-size:16px;
+  margin-top:10px;
+}
+
+.score{
+  display:flex;
+  justify-content:space-between;
+  padding:12px;
+  margin:7px 0;
+  border-radius:12px;
+  background:#ffffff12;
+}
+
+.hidden{
+  display:none;
+}
+
+.big{
+  font-size:55px;
+}
