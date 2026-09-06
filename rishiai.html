@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rishi Maths Game</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game {
+  width: 95%;
+  max-width: 430px;
+  background: white;
+  padding: 25px;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+h1 {
+  margin-top: 0;
+  color: #222;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.question {
+  font-size: 38px;
+  font-weight: bold;
+  margin: 30px 0;
+  color: #333;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  font-size: 25px;
+  text-align: center;
+  border: 2px solid #4facfe;
+  border-radius: 12px;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#submitBtn {
+  background: #4facfe;
+  color: white;
+}
+
+#newGameBtn {
+  background: #222;
+  color: white;
+}
+
+.message {
+  height: 30px;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.start {
+  background: #00b894;
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+  <h1>🧠 Rishi Maths Game</h1>
+
+  <div class="stats">
+    <span>🏆 Score: <span id="score">0</span></span>
+    <span>❤️ Lives: <span id="lives">3</span></span>
+  </div>
+
+  <div>
+    ⏱️ Time: <span id="time">60</span> sec
+  </div>
+
+  <div class="question" id="question">
+    Press Start!
+  </div>
+
+  <input
+    type="number"
+    id="answer"
+    placeholder="Answer"
+    disabled
+  >
+
+  <button id="submitBtn" onclick="checkAnswer()" disabled>
+    ✅ Submit
+  </button>
+
+  <div class="message" id="message"></div>
+
+  <button class="start" id="startBtn" onclick="startGame()">
+    🚀 Start Game
+  </button>
+
+  <button id="newGameBtn" onclick="startGame()">
+    🔄 New Game
+  </button>
+
+</div>
+
+<script>
+
+let score = 0;
+let lives = 3;
+let time = 60;
+let correctAnswer = 0;
+let timer;
+let gameRunning = false;
+
+function generateQuestion() {
+
+  let num1 = Math.floor(Math.random() * 20) + 1;
+  let num2 = Math.floor(Math.random() * 20) + 1;
+
+  let operations = ["+", "-", "×"];
+  let operation = operations[Math.floor(Math.random() * operations.length)];
+
+  if (operation === "+") {
+    correctAnswer = num1 + num2;
+  }
+
+  if (operation === "-") {
+    if (num2 > num1) {
+      let temp = num1;
+      num1 = num2;
+      num2 = temp;
+    }
+
+    correctAnswer = num1 - num2;
+  }
+
+  if (operation === "×") {
+    correctAnswer = num1 * num2;
+  }
+
+  document.getElementById("question").innerText =
+    num1 + " " + operation + " " + num2 + " = ?";
+}
+
+function startGame() {
+
+  clearInterval(timer);
+
+  score = 0;
+  lives = 3;
+  time = 60;
+  gameRunning = true;
+
+  document.getElementById("score").innerText = score;
+  document.getElementById("lives").innerText = lives;
+  document.getElementById("time").innerText = time;
+
+  document.getElementById("answer").disabled = false;
+  document.getElementById("submitBtn").disabled = false;
+
+  document.getElementById("message").innerText = "";
+
+  document.getElementById("answer").value = "";
+  document.getElementById("answer").focus();
+
+  generateQuestion();
+
+  timer = setInterval(function() {
+
+    time--;
+
+    document.getElementById("time").innerText = time;
+
+    if (time <= 0) {
+      endGame("⏰ Time Over!");
+    }
+
+  }, 1000);
+}
+
+function checkAnswer() {
+
+  if (!gameRunning) return;
+
+  let userAnswer =
+    Number(document.getElementById("answer").value);
+
+  if (
+    document.getElementById("answer").value === ""
+  ) {
+    return;
+  }
+
+  if (userAnswer === correctAnswer) {
+
+    score += 10;
+
+    document.getElementById("score").innerText = score;
+
+    document.getElementById("message").innerText =
+      "🎉 Correct! +10";
+
+  } else {
+
+    lives--;
+
+    document.getElementById("lives").innerText = lives;
+
+    document.getElementById("message").innerText =
+      "❌ Wrong!";
+
+    if (lives <= 0) {
+      endGame("💔 Game Over!");
+      return;
+    }
+  }
+
+  document.getElementById("answer").value = "";
+
+  generateQuestion();
+}
+
+function endGame(text) {
+
+  gameRunning = false;
+
+  clearInterval(timer);
+
+  document.getElementById("answer").disabled = true;
+  document.getElementById("submitBtn").disabled = true;
+
+  document.getElementById("question").innerText = text;
+
+  document.getElementById("message").innerText =
+    "🏆 Final Score: " + score;
+}
+
+document.getElementById("answer").addEventListener(
+  "keydown",
+  function(event) {
+
+    if (event.key === "Enter") {
+      checkAnswer();
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
